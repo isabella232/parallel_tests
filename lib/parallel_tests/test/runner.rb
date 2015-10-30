@@ -45,7 +45,7 @@ module ParallelTests
 
         def tests_with_size(tests, options)
           tests = find_tests(tests, options)
-
+          
           case options[:group_by]
           when :found
             tests.map! { |t| [t, 1] }
@@ -53,6 +53,15 @@ module ParallelTests
             sort_by_filesize(tests)
           when :runtime
             sort_by_runtime(tests, runtimes(tests, options), options.merge(allowed_missing: 0.5))
+          when :filesize_and_runtime
+            # use recorded test runtime if we got enough data
+            runtimes = runtimes(tests, options) rescue []
+            if runtimes.size * 1.5 > tests.size
+              puts "Using recorded test runtime"
+              sort_by_runtime(tests, runtimes, options.merge(allowed_missing: 0.5))
+            else
+              sort_by_filesize(tests)
+            end
           when nil
             # use recorded test runtime if we got enough data
             runtimes = runtimes(tests, options) rescue []

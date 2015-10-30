@@ -140,6 +140,7 @@ module ParallelTests
                     scenarios - individual cucumber scenarios
                     filesize - by size of the file
                     runtime - info from runtime log
+                    filesize_and_runtime - perfer runtime but fall back to filesize, Compatable with --group-by
                     default - runtime when runtime log is filled otherwise filesize
           TEXT
           ) { |type| options[:group_by] = type.to_sym }
@@ -205,7 +206,7 @@ module ParallelTests
       options[:group_by] ||= :filesize if options[:only_group]
 
       raise "--group-by found and --single-process are not supported" if options[:group_by] == :found and options[:single_process]
-      allowed = [:filesize, :runtime, :found]
+      allowed = [:filesize, :runtime, :found, :filesize_and_runtime]
       if !allowed.include?(options[:group_by]) && options[:only_group]
         raise "--group-by #{allowed.join(" or ")} is required for --only-group"
       end
